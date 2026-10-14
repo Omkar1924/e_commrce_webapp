@@ -1,0 +1,15 @@
+package com.omkar.ecommerce.service;
+
+import org.springframework.stereotype.Service;
+
+import com.omkar.ecommerce.entity.Product;
+import com.omkar.ecommerce.repository.CategoryRepository;
+
+@Service
+public class CategoryService {
+	
+	public CategoryRepository = categoryRepository;
+	
+	public Product
+
+}

@@ -13,39 +13,40 @@ import com.omkar.ecommerce.repository.UserRepository;
 @Service
 public class UserService {
 
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	public User signup(SignupRequest request) {
-		if(userRepository.findByEmail(request.getEmail()).isPresent()) {
-			throw new IllegalArgumentException("Email already register");
-		}
-		
-		User user = new User();
-		user.setName(request.getName());
-		user.setEmail(request.getEmail());
-		user.setPassword(passwordEncoder.encode(request.getPassword()));
-		user.setRole(Role.CUSTOMER);
-		
-		return userRepository.save(user);
-	}
-	
-	public User login(LoginRequest request) {
-		
-		User user = userRepository.findByEmail(request.getEmail())
-				.orElseThrow(()-> new IllegalArgumentException("Invalid Email or Password"));
-		
-	    System.out.println("Found user: " + user.getEmail());
-	    System.out.println("Stored hash: " + user.getPassword());
-	    System.out.println("Raw password sent: " + request.getPassword());
-		
-		if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-			throw new IllegalArgumentException("Invalid email or password");
-		}
-		
-		return user;
-	}
+    private static final String INVALID_CREDENTIALS = "Invalid email or password";
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public User signup(SignupRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email already registered");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.CUSTOMER);
+
+        return userRepository.save(user);
+    }
+
+    public User login(LoginRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_CREDENTIALS));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException(INVALID_CREDENTIALS);
+        }
+
+        return user;
+    }
 }

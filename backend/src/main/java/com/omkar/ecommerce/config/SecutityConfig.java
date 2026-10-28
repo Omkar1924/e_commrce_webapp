@@ -9,21 +9,20 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecutityConfig {
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            );
-        return http.build();
-    }
 
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/api/products/", "/api/products/**").permitAll()
+				.requestMatchers("/api/categories", "/api/categories/**").permitAll()
+				.requestMatchers("/api/cart", "/api/cart/**").permitAll()
+				.anyRequest().authenticated());
+		return http.build();
+
+	}
 }
